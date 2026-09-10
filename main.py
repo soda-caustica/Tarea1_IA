@@ -1,6 +1,6 @@
 from typing import List
 from enum import Enum
-
+from random import randint
 class TipoCuadricula(Enum):
     CAMINABLE = 1
     MURO = 2
@@ -45,23 +45,55 @@ class Tablero:
 
                 cuadricula.vecinos = (N, S, E, W)
 
-class AgenteState: #INTERFAZ, SOLO HEREDAR, NO IMPLEMENTAR #INTERFAZ, SOLO HEREDAR, NO IMPLEMENTAR
-    def update(self, agente: Agente):
+class AgenteState: 
+    #INTERFAZ, SOLO HEREDAR, NO IMPLEMENTAR
+    def update(self, agente: Agente, contexto : Juego):
         "XDE"
+
+class AgenteRandom(AgenteState):
+    def update(self,agente: Agente, contexto : Juego):
+        mov = randint(0,3)
+        x,y = agente.pos
+        posibles = contexto.tablero.tablero[x][y].vecinos
+        siguiente = posibles[mov]
+        if siguiente is not None and siguiente.tipo == TipoCuadricula.CAMINABLE:
+            agente.pos = siguiente.pos
 
 class Agente:
     pos : tuple[int,int] #(x,y)
     state : AgenteState
 
+    def __init__(self,x,y, state = AgenteRandom()) -> None:
+        self.pos = (x,y)
+        self.state = state
+
+    def update(self,juego : Juego):
+        self.state.update(self,juego)
+
 class Juego:
     tablero : Tablero
     agentes : List[Agente]
 
-tablero = Tablero(5,5)
+    def __init__(self, x: int, y: int):
+        self.tablero = Tablero(x,y)
+        self.agentes = []
 
-array = tablero.tablero
+    def step(self):
+        for agente in self.agentes:
+            agente.update(self)
+        for i in self.tablero.tablero:
+            for j in i:
+                count = len(list(filter(lambda x: x.pos == j.pos, self.agentes)))
+                print('_' if count == 0 else count ,end=' ')
+            print()
+        input()
 
-for i in array:
-    for j in i:
-        print(j.tipo.value - 1,end=' ')
-    print()
+juego = Juego(5,5)
+
+for i in range(3):
+    x = randint(0,4)
+    y = randint(0,4)
+    juego.agentes.append(Agente(x,y))
+
+while True:
+    juego.step()
