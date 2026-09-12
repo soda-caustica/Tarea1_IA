@@ -3,6 +3,8 @@ from typing import Deque, List
 from enum import Enum
 from random import randint
 from collections import deque
+import os
+import time
 
 class TipoCuadricula(Enum):
     CAMINABLE = 1
@@ -193,6 +195,7 @@ class Juego:
         self.objetivo = obj
 
     def step(self):
+        os.system('clear')
         for agente in self.agentes:
             agente.update(self)
         agentesCorriendo = list(filter(lambda x: not isinstance(x.state,AgenteTermino),self.agentes))
@@ -207,10 +210,10 @@ class Juego:
                 color =  agentesEnCuadricula[0].color() if count > 0 else (255,255,255)
                 print('_' if count == 0 else f"\033[48;2;{color[0]};{color[1]};{color[2]}m" + str(count) + "\033[0m",end=' ')
             print()
-
         print(f"Agentes restantes = {len(agentesCorriendo)}")
         print(f"Agentes listos = {len(self.agentes) - len(agentesCorriendo)}")
-        input()
+        time.sleep(0.2)
+#        input()
 
 x_size = 20
 y_size = 20
