@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import time
 import numpy as np
 from grafo import *
 from agentes import Agente, AgenteTermino
@@ -12,7 +11,7 @@ class Juego:
     objetivo : tuple[int,int]
 
 
-    def costo(self, pos: tuple[int,int]) -> float:
+    def costo(self, pos: tuple[int,int]) -> int:
         agentesCorriendo = filter(lambda x: not isinstance(x.state,AgenteTermino),self.agentes)
         agentesEnCuadricula = list(filter(lambda x: x.pos == pos, agentesCorriendo))
         return len(agentesEnCuadricula) + 1
@@ -56,6 +55,9 @@ class Juego:
                 if j.tipo == TipoCuadricula.SALIDA:
                     print("\033[48;2;0;255;0mX\033[0m", end = ' ')
                     continue
+                if j.tipo == TipoCuadricula.MURO:
+                    print("#", end = ' ')
+                    continue
                 agentesEnCuadricula = list(filter(lambda x: x.pos == j.pos, agentesCorriendo))
                 count = len(agentesEnCuadricula)
                 color =  agentesEnCuadricula[0].color() if count > 0 else (255,255,255)
@@ -63,6 +65,4 @@ class Juego:
             print()
         print(f"Agentes restantes = {len(agentesCorriendo)}")
         print(f"Agentes listos = {len(self.agentes) - len(agentesCorriendo)}")
-        time.sleep(0.2)
-#        input()
 
