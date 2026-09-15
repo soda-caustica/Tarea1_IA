@@ -1,12 +1,13 @@
 from random import randint
 from juego import Juego
 from agentes import Agente, AgenteBFS, AgenteDFS
+from mapas import *
 
-x_size = 20
-y_size = 20
+x_size = 15
+y_size = 15
 def genPos(): return (randint(0,x_size-1),randint(0,y_size-1))
 
-juego = Juego((x_size,y_size), genPos())
+juego = Juego.fromMap(mapa_1)
 
 for i in range(3):
     x,y = genPos()

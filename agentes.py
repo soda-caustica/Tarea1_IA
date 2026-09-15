@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from queue import PriorityQueue
 from typing import TYPE_CHECKING, Deque, List
 from collections import deque
 from random import randint
@@ -24,9 +25,13 @@ class AgenteRandom(AgenteState):
         mov = randint(0,3)
         x,y = agente.pos
         posibles = contexto.tablero.tablero[x][y].vecinos
-        siguiente = posibles[mov] 
-        if siguiente is not None and siguiente.tipo == TipoCuadricula.CAMINABLE: agente.pos = siguiente.pos
-        if agente.pos == contexto.objetivo : agente.state = AgenteTermino()
+        siguiente = posibles[mov]
+        if siguiente is not None and siguiente.tipo in (TipoCuadricula.CAMINABLE, TipoCuadricula.SALIDA):
+            agente.pos = siguiente.pos
+
+        if contexto.getCuadricula(agente.pos).tipo == TipoCuadricula.SALIDA:
+            agente.state = AgenteTermino()
+
     def color(self): return (127,255,212)
 
 class AgenteTermino(AgenteState): # indica que el agente dejó de actuar
@@ -48,6 +53,46 @@ class Agente:
     def color(self) -> tuple[int,int,int]:
         return self.state.color()
 
+class AgenteDijkstra(AgenteState):
+
+    def color(self): return (255,105,180)
+
+    def update(self, agente: Agente, contexto: Juego):
+        camino = self._buscar_camino(agente,contexto)
+
+        if len(camino) >= 2 : agente.pos = camino[1].pos
+
+        if contexto.getCuadricula(agente.pos).tipo == TipoCuadricula.SALIDA:
+            agente.state = AgenteTermino()
+
+    def _buscar_camino(self, agente: Agente, contexto: Juego) -> List[Cuadricula]:
+        inicio = contexto.tablero.tablero[agente.pos[0]][agente.pos[1]]
+        objetivo = contexto.objetivo
+
+        pila = PriorityQueue()
+        pila.put((0,[inicio]))
+        visitados = {inicio.pos:0}
+
+        while pila:
+            camino = pila.get()
+            nodo = camino[-1]
+
+            if nodo.pos == objetivo:
+                return camino
+
+            for vecino in nodo.vecinos:
+                if vecino is None:
+                    continue
+                if vecino.tipo not in (TipoCuadricula.CAMINABLE, TipoCuadricula.SALIDA):
+                    continue
+
+                costo = visitados[nodo.pos] + contexto.costo(vecino.pos)
+                if vecino.pos not in visitados or visitados[vecino.pos] > costo:
+                    nuevo_camino = camino + [vecino]
+                    pila.put((costo,nuevo_camino))
+
+        return []
+
 class AgenteBFS(AgenteState):
 
     def color(self): return (255,105,180)
@@ -57,7 +102,7 @@ class AgenteBFS(AgenteState):
 
         if len(camino) >= 2 : agente.pos = camino[1].pos
 
-        if agente.pos == contexto.objetivo:
+        if contexto.getCuadricula(agente.pos).tipo == TipoCuadricula.SALIDA:
             agente.state = AgenteTermino()
 
     def _buscar_camino(self, agente: Agente, contexto: Juego) -> List[Cuadricula]:
@@ -73,12 +118,12 @@ class AgenteBFS(AgenteState):
             nodo = camino[-1]
 
             if nodo.pos == objetivo:
-                return camino  
+                return camino
 
             for vecino in nodo.vecinos:
                 if vecino is None:
                     continue
-                if vecino.tipo is not TipoCuadricula.CAMINABLE:
+                if vecino.tipo not in (TipoCuadricula.CAMINABLE, TipoCuadricula.SALIDA):
                     continue
                 if vecino.pos in visitados:
                     continue
@@ -102,14 +147,13 @@ class AgenteDFS(AgenteState):
             self.camino_idx = 0
 
         if not self.camino:
-            agente.state = AgenteTermino()
             return
 
         self.camino_idx += 1
         if self.camino_idx < len(self.camino):
             agente.pos = self.camino[self.camino_idx].pos
 
-        if agente.pos == contexto.objetivo:
+        if contexto.getCuadricula(agente.pos).tipo == TipoCuadricula.SALIDA:
             agente.state = AgenteTermino()
 
     def _buscar_camino(self, agente: Agente, contexto: Juego) -> List[Cuadricula]:
@@ -125,12 +169,12 @@ class AgenteDFS(AgenteState):
             nodo = camino[-1]
 
             if nodo.pos == objetivo:
-                return camino  
+                return camino
 
             for vecino in nodo.vecinos:
                 if vecino is None:
                     continue
-                if vecino.tipo is not TipoCuadricula.CAMINABLE:
+                if vecino.tipo not in (TipoCuadricula.CAMINABLE, TipoCuadricula.SALIDA):
                     continue
                 if vecino.pos in visitados:
                     continue

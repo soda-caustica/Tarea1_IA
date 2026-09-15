@@ -1,10 +1,12 @@
 from typing import List
 from enum import Enum
+import numpy as np
 
 class TipoCuadricula(Enum):
     CAMINABLE = 1
     MURO = 2
-    FUEGO = 3
+    SALIDA = 3
+    FUEGO = 4
 
 class Cuadricula:
     # IMPLEMENTACION SIN PESOS!!!
@@ -20,28 +22,46 @@ class Tablero:
     tablero : List[List[Cuadricula]]
     size : tuple[int,int] 
 
-    def __init__(self, size: tuple[int,int]):
+    def __init__(self, tablero, size) -> None:
+        self.tablero = tablero
         self.size = size
-        x,y = self.size
-        self.tablero = []
+
+    @classmethod
+    def fromMap(cls, mapa : np.ndarray):
+
+        if mapa.ndim != 2:
+            raise ValueError("Dimensiones incorrectas del mapa, esto no deberia pasar")
+        x,y = (mapa.shape[0],mapa.shape[1])
+        tablero : List[List[Cuadricula]] = []
         for i in range(x):
-            self.tablero.append([])
+            tablero.append([])
             for j in range(y):
-                self.tablero[i].append(Cuadricula(i,j))
+                tablero[i].append(Cuadricula(i,j,tipo= TipoCuadricula(mapa[i,j])))
 
         for i in range(x):
             for j in range(y):
-                cuadricula = self.tablero[i][j]
+                cuadricula = tablero[i][j]
                 N,S,E,W = (None,None,None,None)
 
                 if i > 0:
-                    W = self.tablero[i - 1][j]
+                    N = tablero[i - 1][j]
                 if i + 1 < x:
-                    E = self.tablero[i + 1][j]
+                    S = tablero[i + 1][j]
                 if j > 0:
-                    N = self.tablero[i][j - 1]
-
+                    W = tablero[i][j - 1]
                 if j + 1 < y:
-                    S = self.tablero[i][j + 1]
+                    E = tablero[i][j + 1]
 
                 cuadricula.vecinos = (N, S, E, W)
+
+        return cls(tablero,(x,y))
+
+    @classmethod
+    def vacio(cls, size: tuple[int,int], obj: tuple[int,int]) -> Tablero:
+        mapa = np.full(size,TipoCuadricula.CAMINABLE.value)
+        mapa[obj] = TipoCuadricula.SALIDA.value
+
+        print(mapa[obj])
+        print(mapa)
+        return cls.fromMap(mapa)
+
