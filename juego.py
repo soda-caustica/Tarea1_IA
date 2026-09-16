@@ -28,7 +28,6 @@ class Juego:
         try:
             x,y = obj
             self.objetivo = obj
-            print(f'obj = {obj}')
             assert tablero.tablero[x][y].tipo == TipoCuadricula.SALIDA
         except Exception:
             raise ValueError("El objetivo entregado no es una salida en el tablero")
@@ -44,8 +43,7 @@ class Juego:
             raise ValueError("El mapa no contiene una salida")
         return cls(Tablero.fromMap(mapa),(filas[0], columnas[0]),agentes)
 
-    def step(self):
-        os.system('clear')
+    def step(self) -> int:
         for agente in self.agentes:
             agente.update(self)
         agentesCorriendo = list(filter(lambda x: not isinstance(x.state,AgenteTermino),self.agentes))
@@ -53,16 +51,17 @@ class Juego:
         for i in self.tablero.tablero:
             for j in i:
                 if j.tipo == TipoCuadricula.SALIDA:
-                    print("\033[48;2;0;255;0mX\033[0m", end = ' ')
+        #            print("\033[48;2;0;255;0mX\033[0m", end = ' ')
                     continue
                 if j.tipo == TipoCuadricula.MURO:
-                    print("#", end = ' ')
+        #            print("#", end = ' ')
                     continue
                 agentesEnCuadricula = list(filter(lambda x: x.pos == j.pos, agentesCorriendo))
                 count = len(agentesEnCuadricula)
                 color =  agentesEnCuadricula[0].color() if count > 0 else (255,255,255)
-                print('_' if count == 0 else f"\033[48;2;{color[0]};{color[1]};{color[2]}m" + str(count) + "\033[0m",end=' ')
-            print()
-        print(f"Agentes restantes = {len(agentesCorriendo)}")
-        print(f"Agentes listos = {len(self.agentes) - len(agentesCorriendo)}")
+        #        print('_' if count == 0 else f"\033[48;2;{color[0]};{color[1]};{color[2]}m" + str(count) + "\033[0m",end=' ')
+        #    print()
+        #print(f"Agentes restantes = {len(agentesCorriendo)}")
+        #print(f"Agentes listos = {len(self.agentes) - len(agentesCorriendo)}")
+        return len(agentesCorriendo)
 

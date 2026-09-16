@@ -20,10 +20,10 @@ class AgenteState:
         ""
 
     def avanzar(self, agente: Agente, cuadricula: Cuadricula, contexto : Juego):
+        if cuadricula not in contexto.getCuadricula(agente.pos).vecinos or cuadricula.tipo not in (TipoCuadricula.CAMINABLE,TipoCuadricula.SALIDA):
+            return
         if cuadricula.tipo == TipoCuadricula.SALIDA:
             agente.state = AgenteTermino()
-        if cuadricula not in contexto.getCuadricula(agente.pos).vecinos or cuadricula.tipo != TipoCuadricula.CAMINABLE:
-            return
         agente.time_left += contexto.costo(cuadricula.pos)
         agente.pos = cuadricula.pos
 
@@ -194,3 +194,4 @@ class AgenteDFS(AgenteState):
                 pila.append(nuevo_camino)
 
         return []
+
