@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class AgenteState(ABC):
     @abstractmethod
-    def update(self, agente: Agente, contexto: Juego):
+    def update(self, agente: Agente, contexto: Juego, debeCaminar: bool):
         ""
 
     @abstractmethod
@@ -41,3 +41,4 @@ class AgenteState(ABC):
     @abstractmethod
     def recalc(self, contexto: Juego):
         ""
+

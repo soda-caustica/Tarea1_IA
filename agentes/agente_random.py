@@ -12,7 +12,9 @@ if TYPE_CHECKING:
 
 class AgenteRandom(AgenteState):
     @override
-    def update(self, agente: Agente, contexto: Juego):
+    def update(self, agente: Agente, contexto: Juego, debeCaminar: bool):
+        if not debeCaminar:
+            return
         mov = randint(0, 3)
         x, y = agente.pos
         posibles = contexto.tablero.tablero[x][y].vecinos
@@ -28,3 +30,4 @@ class AgenteRandom(AgenteState):
     @override
     def recalc(self, contexto: Juego):
         pass
+

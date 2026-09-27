@@ -31,7 +31,9 @@ class AgenteDFS(AgenteState):
         return (255, 255, 0)
 
     @override
-    def update(self, agente: Agente, contexto: Juego):
+    def update(self, agente: Agente, contexto: Juego, debeCaminar: bool):
+        if not debeCaminar:
+            return
         if not self.camino:
             self.camino = self._buscar_camino(agente, contexto)
             self.camino_idx = 0
@@ -71,3 +73,4 @@ class AgenteDFS(AgenteState):
                 pila.append(nuevo_camino)
 
         return []
+

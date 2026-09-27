@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class AgenteTermino(AgenteState):
     @override
-    def update(self, agente: Agente, contexto: Juego):
+    def update(self, agente: Agente, contexto: Juego, debeCaminar: bool):
         pass
 
     @override
@@ -21,3 +21,4 @@ class AgenteTermino(AgenteState):
     @override
     def recalc(self, contexto: Juego):
         pass
+

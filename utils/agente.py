@@ -20,8 +20,10 @@ class Agente:
 
     def update(self, contexto: Juego) -> None:
         self.time_left = max(self.time_left - 1, 0)
-        if self.time_left == 0:
-            self.state.update(self, contexto)
+        self.state.update(self, contexto, self.time_left == 0)
 
     def color(self) -> tuple[int, int, int]:
         return self.state.color()
+
+    def recalc(self, contexto: Juego):
+        self.state.recalc(contexto)

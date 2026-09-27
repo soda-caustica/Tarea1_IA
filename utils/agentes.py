@@ -5,6 +5,8 @@ from agente_dijkstra import AgenteDijkstra
 from agente_random import AgenteRandom
 from agente_state import AgenteState
 from agente_termino import AgenteTermino
+from agente_muerto import AgenteMuerto
+from agente_genetico import AgenteGenetico
 
 __all__ = [
     "Agente",
@@ -14,4 +16,6 @@ __all__ = [
     "AgenteRandom",
     "AgenteState",
     "AgenteTermino",
+    "AgenteGenetico",
+    "AgenteMuerto",
 ]

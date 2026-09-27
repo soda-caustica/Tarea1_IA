@@ -27,10 +27,28 @@ class Cuadricula:
 class Tablero:
     tablero: list[list[Cuadricula]]
     size: tuple[int, int]
+    fronteraFuego: list
 
     def __init__(self, tablero: list[list[Cuadricula]], size: tuple[int, int]) -> None:
         self.tablero = tablero
         self.size = size
+        self.fronteraFuego: list[tuple[int, int]] = []
+
+        for i in range(size[0]):
+            for j in range(size[1]):
+                if tablero[i][j].tipo == TipoCuadricula.FUEGO:
+                    self.fronteraFuego.append((i, j))
+
+    def propagarFuego(self):
+        for _ in range(len(self.fronteraFuego)):
+            fuego: tuple[int, int] = self.fronteraFuego.pop(0)
+            for vecino in self.tablero[fuego[0]][fuego[1]].vecinos:
+                if vecino is not None and vecino.tipo in (
+                    TipoCuadricula.MURO,
+                    TipoCuadricula.CAMINABLE,
+                ):
+                    self.fronteraFuego.append(vecino.pos)
+                    vecino.tipo = TipoCuadricula.FUEGO
 
     @classmethod
     def vacio(cls, size: tuple[int, int], obj: tuple[int, int]):
