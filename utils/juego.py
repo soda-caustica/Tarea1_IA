@@ -16,7 +16,7 @@ class Juego:
     objetivo: tuple[int, int]
     fire_time: int
     fire_map: np.ndarray
-    bfs_map: np.ndarray
+    heuristica: np.ndarray
     tiempo_global: int
     atochamiento_agentes: np.ndarray
 
@@ -31,8 +31,8 @@ class Juego:
             )
         )
 
-    def costo(self, pos: tuple[int, int]) -> int:
-        return int(self.atochamiento_agentes[pos]) + 1
+    def costo(self, pos: tuple[int, int]):
+        return 1 + 4 * (self.atochamiento_agentes[pos] ** 2 / 7**2)
 
     def getCuadricula(self, pos: tuple[int, int]) -> Cuadricula:
         x, y = pos
@@ -57,7 +57,7 @@ class Juego:
         except Exception:
             raise ValueError("El objetivo entregado no es una salida en el tablero")
         self.fire_map = self._calcFireMap(self.tablero)
-        self.bfs_map = self._calcBFS(self.tablero)
+        self.heuristica = self._calcBFS(self.tablero)
         self.atochamiento_agentes = np.zeros(tablero.size, dtype=np.int_)
         for agente in self.agentesCorriendo():
             self.atochamiento_agentes[agente.pos] += 1

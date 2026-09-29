@@ -49,19 +49,31 @@ class AgenteDijkstra(AgenteState):
         inicio = contexto.tablero.tablero[agente.pos[0]][agente.pos[1]]
         objetivo = contexto.objetivo
 
-        heap: list[tuple[int, int, list[Cuadricula]]] = []
-        heapq.heappush(heap, (0, 0, [inicio]))
+        heap: list[tuple[int, int, tuple[int, int]]] = []
+        heapq.heappush(heap, (0, 0, inicio.pos))
         mejor_coste = {inicio.pos: 0}
+        anterior: dict[tuple[int, int], tuple[int, int]] = {}
         contador = 1
 
         while heap:
-            coste_actual, _, camino = heapq.heappop(heap)
-            nodo = camino[-1]
+            coste_actual, _, posicion = heapq.heappop(heap)
+            nodo = contexto.tablero.tablero[posicion[0]][posicion[1]]
 
             if coste_actual > mejor_coste.get(nodo.pos, float("inf")):
                 continue
 
             if nodo.pos == objetivo:
+                camino: list[Cuadricula] = []
+                posicion_actual = objetivo
+                while posicion_actual != inicio.pos:
+                    camino.append(
+                        contexto.tablero.tablero[
+                            posicion_actual[0]
+                        ][posicion_actual[1]]
+                    )
+                    posicion_actual = anterior[posicion_actual]
+                camino.append(inicio)
+                camino.reverse()
                 return camino
 
             for vecino in nodo.vecinos:
@@ -76,7 +88,8 @@ class AgenteDijkstra(AgenteState):
                     or costo_vecino < mejor_coste[vecino.pos]
                 ):
                     mejor_coste[vecino.pos] = costo_vecino
-                    heapq.heappush(heap, (costo_vecino, contador, camino + [vecino]))
+                    anterior[vecino.pos] = nodo.pos
+                    heapq.heappush(heap, (costo_vecino, contador, vecino.pos))
                     contador += 1
 
         return []

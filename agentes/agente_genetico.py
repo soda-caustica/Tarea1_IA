@@ -186,7 +186,7 @@ class AgenteGenetico(AgenteState):
         return int(puntuacion)
 
     def _heuristica(self, p1: tuple[int, int], contexto: Juego):
-        return contexto.bfs_map[p1]
+        return contexto.heuristica[p1]
 
     def _selection(self, agente: Agente, contexto: Juego):
         new_pop = []

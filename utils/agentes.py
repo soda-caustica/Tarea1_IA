@@ -7,6 +7,8 @@ from agente_state import AgenteState
 from agente_termino import AgenteTermino
 from agente_muerto import AgenteMuerto
 from agente_genetico import AgenteGenetico
+from agente_greedy import AgenteGreedy
+from agente_beam import AgenteBeam
 
 __all__ = [
     "Agente",
@@ -18,4 +20,6 @@ __all__ = [
     "AgenteTermino",
     "AgenteGenetico",
     "AgenteMuerto",
+    "AgenteGreedy",
+    "AgenteBeam",
 ]
